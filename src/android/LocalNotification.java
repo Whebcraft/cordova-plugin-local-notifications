@@ -438,7 +438,7 @@ public class LocalNotification extends CordovaPlugin {
         deviceready = true;
 
         for (String js : eventQueue) {
-            sendJavascript(js);
+            LocalNotification.webView.sendJavascript(js);
         }
 
         eventQueue.clear();
@@ -473,31 +473,8 @@ public class LocalNotification extends CordovaPlugin {
         String js = "cordova.plugins.notification.local.core.fireEvent(" +
                 "\"" + event + "\"," + params + ")";
 
-        sendJavascript(js);
-    }
+        LocalNotification.webView.sendJavascript(js);
 
-    /**
-     * Use this instead of deprecated sendJavascript
-     *
-     * @param js
-     *       JS code snippet as string
-     */
-    private static synchronized void sendJavascript(final String js) {
-
-        if (!deviceready) {
-            eventQueue.add(js);
-            return;
-        }
-
-        webView.post(new Runnable(){
-            public void run(){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webView.evaluateJavascript(js, null);
-                } else {
-                    webView.loadUrl("javascript:" + js);
-                }
-            }
-        });
     }
 
     /**
